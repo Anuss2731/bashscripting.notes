@@ -1,0 +1,42 @@
+All teh commands are related to the shell/bash scripting
+
+1:".sh" file end with .sh called for bash scripting file
+2:"#!/bin?bash" is line call sheband which used in all scriting that indicate its bash scriting
+3:make sure script have RWX permission "chmod +x filename"
+4:for runing the bash script on linux commands
+  "./scriptname.sh"
+  "/path/scriptname.sh"
+  "bash scriptname.sh"
+
+command "su -" this is used to login with eoot user
+command "sudo passwd root" to set the root passwrd
+echo $UID "used to check the root id or not if value is 0 u are in root if value is 1000 u are other user"
+
+${0} used in echo to print the name of script 
+like
+echo "script name ${0}"
+
+background
+nohup ./scriptname.sh
+nohup command run your script i the background and u used the terrminalfor other used
+the output of the command is store in nohup.out file that create itself when u run command
+
+automate script (at)
+at comand used to run script one time or specific time.used crontab to run script multiple time
+at time  date 
+give the command and then path of script
+ctrl d
+its automate script and eun when the time and date can match
+atr command to check what and when the file can run
+atrm ID to remove the job ID u get form atr command
+example terminal
+at 20:00 31 july 2025
+bash /home/naxanuss/shellscript/shellscriptname
+ctrl date
+note:used the redirect.sh file to save the output if u dont then output of command u dont show mean output logs cannot store 
+
+automate script (corntab)
+command : corntab -l "check whats job are running and which time"
+command : corntab -e "it open the editor and u time the script in it"
+note open corntab -e file see how we write the time and date in it
+

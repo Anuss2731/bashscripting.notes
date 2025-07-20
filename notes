@@ -1,0 +1,8 @@
+this notes are related to the bash 
+
+equal               ( -eq ) if u compared numeric valu ( == ) used this for string
+great then equal to ( -ge )
+less then equal to  ( -le )
+not equal           ( -ne / != )
+greater then        ( -gt )
+less thenj          ( -it )
