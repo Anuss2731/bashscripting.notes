@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  name: ETECDEVOPS03
+  name: ubuntu-latest
 
 steps:
 - checkout: self
