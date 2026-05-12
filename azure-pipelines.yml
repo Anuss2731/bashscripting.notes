@@ -1,0 +1,34 @@
+trigger: none  # Pipeline triggered manually or by GitHub webhook
+
+resources:
+  repositories:
+    - repository: github_source
+      type: github
+      name: YOUR_GITHUB_ORG/YOUR_GITHUB_REPO   # e.g. myorg/myproject
+      endpoint: YOUR_GITHUB_SERVICE_CONNECTION   # Name from Project Settings > Service Connections
+      ref: refs/heads/main                        # Branch to pull from
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  AZURE_REPO_URL: 'https://$(System.AccessToken)@dev.azure.com/YOUR_ORG/YOUR_PROJECT/_git/YOUR_AZURE_REPO'
+  SOURCE_BRANCH: 'main'   # GitHub branch
+  TARGET_BRANCH: 'main'   # Azure Repos branch
+
+steps:
+  - checkout: github_source
+    persistCredentials: true
+    fetchDepth: 0            # Full history (needed for proper push)
+
+  - script: |
+      git config user.email "pipeline@azuredevops.com"
+      git config user.name "Azure Pipeline"
+    displayName: 'Configure git identity'
+
+  - script: |
+      git remote add azure $(AZURE_REPO_URL)
+      git push azure HEAD:$(TARGET_BRANCH) --force
+    displayName: 'Push code to Azure Repos'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
