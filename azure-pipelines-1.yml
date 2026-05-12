@@ -13,6 +13,8 @@ steps:
 
 - task: Bash@3
   displayName: 'Pull from GitHub and Push to Azure Repos'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
   inputs:
     targetType: 'inline'
     script: |
@@ -22,32 +24,39 @@ steps:
       echo "START: GitHub to Azure Repos Sync"
       echo "========================================="
 
-      # ── SSH Setup ──────────────────────────────────
+      # ── SSH Setup ──────────────────────────────
       echo "Setting up SSH key..."
       mkdir -p ~/.ssh
       cp $(sshKey.secureFilePath) ~/.ssh/id_ed25519
       chmod 600 ~/.ssh/id_ed25519
       chmod 700 ~/.ssh
-
-      # GitHub fingerprint trust karo
       ssh-keyscan github.com >> ~/.ssh/known_hosts
       chmod 644 ~/.ssh/known_hosts
-
       echo "SSH setup complete."
 
-      # ── Clone GitHub Repo ──────────────────────────
+      # ── Clone GitHub ────────────────────────────
       echo "Cloning from GitHub..."
       git clone --mirror git@github.com:Anuss2731/bashscripting.notes.git repo_mirror
       cd repo_mirror
-
       echo "GitHub clone done."
 
-      # ── Push to Azure Repos ────────────────────────
+      # ── Token Check ─────────────────────────────
+      if [ -z "$SYSTEM_ACCESSTOKEN" ]; then
+        echo "❌ Token is EMPTY - OAuth not enabled!"
+        exit 1
+      else
+        echo "✅ Token present - length: ${#SYSTEM_ACCESSTOKEN} chars"
+      fi
+
+      # ── Test repo access before pushing ─────────
+      echo "Testing repo access..."
+      git ls-remote https://pipeline-user:$SYSTEM_ACCESSTOKEN@tzaroon.visualstudio.com/Anus-Practice/_git/git-repo
+      echo "✅ Repo access confirmed."
+
+      # ── Push to Azure Repos ──────────────────────
       echo "Pushing to Azure Repos..."
-      git push --mirror https://$(System.AccessToken)@tzaroon.visualstudio.com/Anus-Practice/_git/git-repo
+      git push --mirror https://pipeline-user:$SYSTEM_ACCESSTOKEN@tzaroon.visualstudio.com/Anus-Practice/_git/git-repo
 
       echo "========================================="
-      echo "DONE: Code pushed to Azure Repos"
+      echo "DONE: Code synced to Azure Repos ✅"
       echo "========================================="
-  env:
-    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
