@@ -60,3 +60,20 @@ steps:
       echo "========================================="
       echo "DONE: Code synced to Azure Repos ✅"
       echo "========================================="
+- task: Bash@3
+  displayName: 'Find Repo Name'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  inputs:
+    targetType: 'inline'
+    script: |
+      curl -s -u ":$SYSTEM_ACCESSTOKEN" \
+        "https://dev.azure.com/tzaroon/Anus-Practice/_apis/git/repositories?api-version=7.0" \
+        | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for r in data.get('value', []):
+    print('Repo Name:', r['git-repo'])
+    print('Clone URL:', r['https://tzaroon.visualstudio.com/Anus-Practice/_git/git-repo'])
+    print('---')
+"    
